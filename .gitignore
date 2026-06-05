@@ -42,7 +42,8 @@ nanopubs/imported/
 # directory. NEVER committed; recreate by re-running the import skill.
 _template_from_prior/
 
-# Paper PDFs (single PDF allowed; subfolder build artefacts ignored)
+# Paper PDFs (kept local, not committed — see paper/README.md; subfolder build artefacts ignored)
+paper/*.pdf
 paper/_build/
 paper/.tmp/
 
@@ -52,8 +53,12 @@ notebooks/figures/
 # Reference / external archives
 reference/
 
-# Results — large numerical outputs (commit only summary CSVs you reference in figures)
-results/raw/
+# Results — regenerable outputs. Commit only the summary + aggregate the README/book reference.
+# NB: rec_*.json are the HMM resumability cache — committing them would make a fresh
+# `snakemake` run skip the analysis and reuse stale results, breaking reproducibility.
+results/*
+!results/summary.csv
+!results/aggregate.json
 
 # Docker
 docker-image.tar.gz

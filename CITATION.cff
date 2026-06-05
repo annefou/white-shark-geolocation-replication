@@ -1,7 +1,18 @@
 cff-version: 1.2.0
-title: "white-shark-geolocation-replication"
+title: "white-shark-geolocation-replication: an open replication of juvenile white shark geolocations (O'Sullivan et al. 2022)"
 message: "If you use this software, please cite it as below."
 type: software
+abstract: >-
+  A FORRT replication study testing whether the daily geolocations of juvenile
+  white sharks (Carcharodon carcharias) released by O'Sullivan et al. (2022),
+  computed by the proprietary GPE3 light-plus-SST model, can be reproduced with a
+  fully open method. It re-derives positions with pangeo-fish — a HEALPix-NESTED
+  hidden Markov model matching tag temperature-at-depth against the GLORYS12V1
+  ocean reanalysis — and compares both against co-deployed Argos SPOT fixes as an
+  independent referee. In a minimal temperature-only configuration the open method
+  is materially less accurate than GPE3 (median 276 km vs 54 km great-circle error
+  across four tags), qualifying the reproducibility of the released geolocations
+  with open tooling.
 authors:
   - family-names: "Fouilloux"
     given-names: "Anne"
@@ -10,7 +21,7 @@ authors:
 repository-code: "https://github.com/annefou/white-shark-geolocation-replication"
 license: MIT
 version: "0.1.0"
-date-released: "2026-06-04"
+date-released: "2026-06-05"
 # After your first GitHub release the Zenodo integration mints a concept DOI.
 # Replace this once available (run /init-template again or edit by hand):
 doi: "{{ZENODO_DOI}}"
@@ -24,6 +35,14 @@ keywords:
   - FORRT
   - nanopublication
   - Science-Live
+  - geolocation
+  - biologging
+  - animal tracking
+  - white shark
+  - Carcharodon carcharias
+  - pangeo-fish
+  - hidden Markov model
+  - GLORYS
 references:
   - type: article
     title: "A biologging database of juvenile white sharks from the northeast Pacific"
@@ -32,3 +51,8 @@ references:
         given-names: "John"
     year: "2022"
     doi: "10.1038/s41597-022-01235-3"
+  - type: data
+    title: "Juvenile white shark biologging archive (northeast Pacific)"
+    year: "2022"
+    doi: "10.24431/rw1k6c3"
+    notes: "CC-BY data archive re-geolocated by this replication (ATN DAC / DataONE Research Workspace)."

@@ -10,10 +10,14 @@
 [![Science Live](https://img.shields.io/badge/Science%20Live-nanopub%20chain-purple)](nanopubs/PUBLISHED.md)
 [![RO-Crate](https://img.shields.io/badge/RO--Crate-1.2-orange)](ro-crate-metadata.json)
 
-> **A biologging database of juvenile white sharks from the northeast Pacific** — replication study.
-> Reference paper: [10.1038/s41597-022-01235-3](https://doi.org/10.1038/s41597-022-01235-3)
+> **Can an open method reproduce the juvenile white shark geolocations of O'Sullivan et al. (2022)?**
+> Reference paper: [10.1038/s41597-022-01235-3](https://doi.org/10.1038/s41597-022-01235-3) · Data archive: [10.24431/rw1k6c3](https://doi.org/10.24431/rw1k6c3)
 
-This is a self-contained replication of the headline claim of the reference paper. It produces a reproducible computational pipeline, a Zenodo-archived release with a citable DOI, and a FORRT-tagged nanopublication chain on the [Science Live platform](https://platform.sciencelive4all.org).
+The reference paper released daily geolocations for juvenile white sharks (*Carcharodon carcharias*) computed by **GPE3** — a *proprietary* light-plus-SST hidden Markov model that runs on a vendor portal and cannot be re-run from the public data. This is a **Replication Study (different methodology)**: it re-derives the daily positions with a **fully open** method — [`pangeo-fish`](https://github.com/pangeo-fish/pangeo-fish), a HEALPix-NESTED hidden Markov model matching tag *temperature-at-depth* against the GLORYS12V1 ocean reanalysis — and compares the two against **Argos SPOT fixes as an independent accuracy referee** (GPE3 is never treated as ground truth).
+
+**Headline result:** in a deliberately *minimal* configuration (temperature-only emission, endpoint anchors), the open method is materially less accurate than the proprietary GPE3 — **median 276 km vs 54 km** great-circle error to the Argos referee across four co-deployed tags. The gap is diagnosed (the Brownian σ saturates → weak thermal constraint), and the result **qualifies** the *reproducibility* of the released geolocations with open tooling without disputing the paper's correctness. This is a baseline; the method has substantial unused headroom (multi-signal fusion, acoustic anchoring, finer assimilative fields — see [the Outcome's limitations](nanopubs/drafts/05_outcome.md)).
+
+It produces a reproducible computational pipeline, a Zenodo-archived release with a citable DOI, and a FORRT-tagged nanopublication chain on the [Science Live platform](https://platform.sciencelive4all.org).
 
 ---
 
@@ -35,6 +39,22 @@ docker run --rm ghcr.io/annefou/white-shark-geolocation-replication:latest
 ```
 
 The Jupyter Book version is at <https://annefou.github.io/white-shark-geolocation-replication/>.
+
+## Results
+
+Open `pangeo-fish` (temperature-at-depth HMM) vs the paper's proprietary GPE3 (light+SST), judged against co-deployed Argos SPOT fixes (the independent referee — GPE3 is *not* ground truth). Median great-circle error to Argos, same fixes for both methods:
+
+| Tag | Argos fixes | pangeo-fish vs Argos | GPE3 vs Argos | fitted σ |
+|---|---|---|---|---|
+| 07_05 | 68 | 300.3 km | 94.5 km | 0.0070 (interior) |
+| 08_01 | 75 | 354.5 km | 30.4 km | 0.0937 (at bound) |
+| 08_02 | 62 | 201.8 km | 41.3 km | 0.0937 (at bound) |
+| 08_09 | 62 | 251.1 km | 67.0 km | 0.0937 (at bound) |
+| **aggregate** (median of medians) | | **276 km** | **54 km** | |
+
+![Main result](figures/main_result.png)
+
+**Interpretation.** The open method, in this minimal configuration, is ~3–12× less accurate than the tuned proprietary GPE3. The fitted Brownian σ saturating at its upper bound for 3 of 4 tags is diagnostic: the temperature-at-depth signal is weakly constraining (smooth fields → flat likelihood), unlike GPE3's clock-sharp light longitude. **Honest scope:** this is a *floor* for a bare configuration, not a verdict on `pangeo-fish` — which supports multi-signal emissions (open light geolocation, SST, salinity, bathymetry) and known reference-point/acoustic anchoring that were not used here. Two tags were excluded for documented reasons (02_01: PAT2 with no external temperature sensor; 06_10: basin-scale GLORYS subset would not download). Full numbers in [`results/summary.csv`](results/summary.csv); honest verdict and limitations in [`nanopubs/drafts/05_outcome.md`](nanopubs/drafts/05_outcome.md).
 
 ## Built from a template
 

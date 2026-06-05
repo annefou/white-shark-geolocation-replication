@@ -1,0 +1,8 @@
+tag,deploy_days,has_referee,n_argos_fixes,healpix_level,fitted_sigma_rad,pf_vs_argos_median_km,gpe3_vs_argos_median_km,pf_vs_gpe3_median_km,status,error
+07_05,132.0,True,68.0,9,0.0070119231774919,300.3171732213588,94.51448259058922,258.2125935879451,ok,
+08_01,148.0,True,75.0,9,0.0937451709712075,354.45681977389216,30.383216956790857,273.10817591921534,ok,
+08_02,148.0,True,62.0,9,0.0937451709712075,201.79852405685685,41.31455291021761,178.60983326490933,ok,
+08_09,148.0,True,62.0,9,0.0937451709712075,251.09814225756864,67.01811043613424,184.6214170399136,ok,
+02_01,,False,,9,,,,,skipped_clean,no External Temperature sensor (PAT2 records only internal 'Recorder Temp'); temperature-at-depth-vs-GLORYS emission invalid
+06_10,,False,,9,,,,,skipped_clean,FileNotFoundError: [Errno 2] No such file or directory: '/Users/annef/Documents/ScienceLive/white-shark-geolocation-replication/data/raw/glorys/glorys_thetao_06_10.nc'
+07_01,180.0,False,0.0,9,0.0937451709712075,,,169.9337612665381,ok,
