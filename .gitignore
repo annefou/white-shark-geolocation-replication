@@ -1,5 +1,13 @@
-# Generated notebooks (kept as jupytext .py source-of-truth)
+# Generated notebooks — the jupytext .py files are the source of truth.
+# EXCEPTION: the four executed pipeline notebooks (with cell outputs) ARE committed
+# so the Jupyter Book (MyST) renders plots without re-running the GLORYS download +
+# multi-hour pangeo-fish HMM in CI. Refresh them by re-executing locally (data +
+# Copernicus creds + the results/rec_*.json HMM cache make this fast) and committing.
 notebooks/*.ipynb
+!notebooks/01_data_download.ipynb
+!notebooks/02_data_clean.ipynb
+!notebooks/03_analysis.ipynb
+!notebooks/04_figures.ipynb
 notebooks/.ipynb_checkpoints/
 
 # MyST / Jupyter Book build output

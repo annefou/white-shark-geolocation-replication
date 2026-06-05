@@ -29,8 +29,12 @@ jobs:
           # {{ZENODO_DOI}} is documented to remain unsubstituted until the first
           # GitHub release mints the concept DOI — so don't treat it as a blocker.
           # See docs/fair4rs-checklist.md.
+          # Exclude the whole .claude/ tree: skill/agent docs legitimately contain
+          # {{...}} example tokens (e.g. {{PRIOR_CHAIN_URI}} in the replication-study
+          # skill), which are not uninitialised template fields. Matches the
+          # first-run guard in CLAUDE.md, which also excludes ./.claude/.
           placeholder_files=$(grep -rln '{{[A-Z_]\+}}' . --include='*.md' --include='*.yml' --include='*.yaml' --include='*.json' --include='*.cff' --include='*.py' --include='*.toml' 2>/dev/null \
-            | grep -v 'claude/skills/init-template/' \
+            | grep -v '/\.claude/' \
             | while read f; do
                 if grep -oE '\{\{[A-Z_]+\}\}' "$f" | grep -qv '{{ZENODO_DOI}}'; then
                   echo "$f"
@@ -66,22 +70,26 @@ jobs:
           cache: true
           environments: docs
 
-      - name: Convert .py notebooks to .ipynb
+      # The executed notebooks/*.ipynb (with cell outputs) are committed to the
+      # repo, so the book is built FROM those outputs — we do NOT convert .py or
+      # re-execute here. Re-execution would require Copernicus Marine credentials
+      # (GLORYS download) plus the multi-hour pangeo-fish HMM, neither of which is
+      # feasible on every push. To refresh the book, re-execute the notebooks
+      # locally (data + creds + the results/rec_*.json HMM cache make this fast)
+      # and commit the updated .ipynb. See docs/cicd-conventions.md.
+      - name: Verify committed notebooks carry outputs
         if: steps.guard.outputs.skip != 'true'
         run: |
-          for nb in notebooks/*.py; do
-            pixi run jupytext --to notebook "$nb"
-          done
-
-      # Glob, not a hard-coded list — new notebooks are picked up automatically.
-      - name: Execute notebooks
-        if: steps.guard.outputs.skip != 'true'
-        run: |
+          missing=""
           for nb in notebooks/*.ipynb; do
-            echo "::group::Executing $nb"
-            pixi run jupyter execute --inplace "$nb"
-            echo "::endgroup::"
+            if ! pixi run -e docs python -c "import json,sys; nb=json.load(open(sys.argv[1])); sys.exit(0 if any(c.get('cell_type')=='code' and c.get('outputs') for c in nb['cells']) else 1)" "$nb"; then
+              missing="$missing $nb"
+            fi
           done
+          if [ -n "$missing" ]; then
+            echo "::error::These committed notebooks have no cell outputs — the book would render empty. Re-execute locally and commit:$missing"
+            exit 1
+          fi
 
       - name: Build MyST site
         if: steps.guard.outputs.skip != 'true'

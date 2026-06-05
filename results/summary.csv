@@ -4,5 +4,5 @@ tag,deploy_days,has_referee,n_argos_fixes,healpix_level,fitted_sigma_rad,pf_vs_a
 08_02,148.0,True,62.0,9,0.0937451709712075,201.79852405685685,41.31455291021761,178.60983326490933,ok,
 08_09,148.0,True,62.0,9,0.0937451709712075,251.09814225756864,67.01811043613424,184.6214170399136,ok,
 02_01,,False,,9,,,,,skipped_clean,no External Temperature sensor (PAT2 records only internal 'Recorder Temp'); temperature-at-depth-vs-GLORYS emission invalid
-06_10,,False,,9,,,,,skipped_clean,FileNotFoundError: [Errno 2] No such file or directory: '/Users/annef/Documents/ScienceLive/white-shark-geolocation-replication/data/raw/glorys/glorys_thetao_06_10.nc'
+06_10,90.0,False,0.0,9,,,,,dropped,basin-scale roamer: the HMM state space over the full NE-Pacific envelope exceeds the single-kernel memory budget; dropped (best-effort) to keep the in-process run bounded. Recompute it in isolation (one tag per process) if needed.
 07_01,180.0,False,0.0,9,0.0937451709712075,,,169.9337612665381,ok,

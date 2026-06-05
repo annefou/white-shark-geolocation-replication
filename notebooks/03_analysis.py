@@ -89,6 +89,21 @@ TAGS = {
 DEFAULT_HEALPIX_LEVEL = 9
 HEALPIX_LEVEL_OVERRIDE: dict[str, int] = {}
 
+# Best-effort drop list. Some deployments roam across the full NE-Pacific
+# envelope; their HMM state space does not fit the memory budget when the whole
+# pipeline runs in a single kernel (as it does for the Jupyter Book build). An
+# unbounded attempt OOM-kills the kernel — which, unlike a caught exception,
+# aborts the entire notebook and voids every other tag's result. Recording such
+# a tag as an explicit "dropped" outcome keeps the in-process run bounded and
+# honest. 06_10 is the basin-scale roamer (see Snakefile / project notes); its
+# GLORYS field is ~5x any other tag's.
+BEST_EFFORT_DROP: dict[str, str] = {
+    "06_10": ("basin-scale roamer: the HMM state space over the full "
+              "NE-Pacific envelope exceeds the single-kernel memory budget; "
+              "dropped (best-effort) to keep the in-process run bounded. "
+              "Recompute it in isolation (one tag per process) if needed."),
+}
+
 # Emission-likelihood spread (degC): tag/GLORYS temperature-match uncertainty.
 DIFFERENCES_STD = 0.75
 INITIAL_STD = 1e-3
@@ -245,6 +260,13 @@ for shark, (pat_dep, spot_dep, has_referee) in TAGS.items():
         rec["status"] = "skipped_clean"
         rec["error"] = clean_status.get(shark, {}).get("reason", "not cleaned")
         print(f"  SKIP (clean stage): {rec['error']}")
+        records.append(rec)
+        continue
+
+    if shark in BEST_EFFORT_DROP:
+        rec["status"] = "dropped"
+        rec["error"] = BEST_EFFORT_DROP[shark]
+        print(f"  DROPPED (best-effort): {rec['error']}")
         records.append(rec)
         continue
 
