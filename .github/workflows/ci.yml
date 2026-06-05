@@ -18,6 +18,8 @@ jobs:
 
       - name: Skip CI if template has not been initialised or notebooks are scaffolds
         id: guard
+        env:
+          COPERNICUS_CREDENTIALS_BASE64: ${{ secrets.COPERNICUS_CREDENTIALS_BASE64 }}
         run: |
           # {{ZENODO_DOI}} is documented to remain unsubstituted until the first
           # GitHub release mints the concept DOI — so don't treat it as a blocker.
@@ -39,6 +41,9 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           elif [ -n "$scaffold_files" ]; then
             echo "::notice::Notebooks are still in scaffold state — replace placeholders in notebooks/*.py with your actual replication code (Phase 2). The Snakefile rule outputs will not be produced until then. Skipping pipeline run."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          elif [ -z "$COPERNICUS_CREDENTIALS_BASE64" ]; then
+            echo "::notice::No Copernicus Marine credentials (COPERNICUS_CREDENTIALS_BASE64 secret) — the pipeline's GLORYS download cannot run in CI, so the end-to-end smoke run is skipped (not failed). Add the secret, or archive the GLORYS subset on Zenodo and point notebooks/01 at it, to enable a real smoke run. The Jupyter Book still builds from the committed executed notebooks via jupyter-book.yml."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
