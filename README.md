@@ -32,6 +32,20 @@ pixi run snakemake --cores 1
 
 (Pixi resolves `pixi.toml` against the per-platform `pixi.lock`, installs the env under `.pixi/`, and provides `pixi run` for any task without needing an `activate` step.)
 
+### Data & credentials
+
+The pipeline downloads its own inputs on first run (`notebooks/01_data_download.py`) — no manual data prep, and everything is cached so re-runs skip files already on disk. There are two sources, one of which needs a free account:
+
+- **Biologging archive** ([10.24431/rw1k6c3](https://doi.org/10.24431/rw1k6c3), CC-BY) — public, **no credentials**.
+- **GLORYS12V1 ocean reanalysis** (Copernicus Marine `GLOBAL_MULTIYEAR_PHY_001_030`, the field the HMM matches temperature-at-depth against) — needs a **free Copernicus Marine account**:
+  1. Register at <https://data.marine.copernicus.eu/register>.
+  2. Run `copernicusmarine login` once — it writes the credentials to `~/.copernicusmarine/.copernicusmarine-credentials`.
+  3. `pixi run snakemake --cores 1` then fetches everything (GLORYS is subset per tag to its deployment window + bounding box; ~0.7 GB raw).
+
+Without Copernicus credentials the archive still downloads, but the GLORYS step fails. **Reading the results needs no credentials at all:** the [Jupyter Book](https://annefou.github.io/white-shark-geolocation-replication/) and its figures build from the committed executed notebooks — only re-running the analysis from scratch requires the account.
+
+For CI, supply the credentials file base64-encoded as the `COPERNICUS_CREDENTIALS_BASE64` GitHub Actions secret (see `DOMAIN.md` and the commented block in `.github/workflows/ci.yml`).
+
 Or with Docker:
 
 ```bash
@@ -54,7 +68,7 @@ Open `pangeo-fish` (temperature-at-depth HMM) vs the paper's proprietary GPE3 (l
 
 ![Main result](figures/main_result.png)
 
-**Interpretation.** The open method, in this minimal configuration, is ~3–12× less accurate than the tuned proprietary GPE3. The fitted Brownian σ saturating at its upper bound for 3 of 4 tags is diagnostic: the temperature-at-depth signal is weakly constraining (smooth fields → flat likelihood), unlike GPE3's clock-sharp light longitude. **Honest scope:** this is a *floor* for a bare configuration, not a verdict on `pangeo-fish` — which supports multi-signal emissions (open light geolocation, SST, salinity, bathymetry) and known reference-point/acoustic anchoring that were not used here. Two tags were excluded for documented reasons (02_01: PAT2 with no external temperature sensor; 06_10: basin-scale GLORYS subset would not download). Full numbers in [`results/summary.csv`](results/summary.csv); honest verdict and limitations in [`nanopubs/drafts/05_outcome.md`](nanopubs/drafts/05_outcome.md).
+**Interpretation.** The open method, in this minimal configuration, is ~3–12× less accurate than the tuned proprietary GPE3. The fitted Brownian σ saturating at its upper bound for 3 of 4 tags is diagnostic: the temperature-at-depth signal is weakly constraining (smooth fields → flat likelihood), unlike GPE3's clock-sharp light longitude. **Honest scope:** this is a *floor* for a bare configuration, not a verdict on `pangeo-fish` — which supports multi-signal emissions (open light geolocation, SST, salinity, bathymetry) and known reference-point/acoustic anchoring that were not used here. Two tags were excluded for documented reasons (02_01: PAT2 with no external temperature sensor; 06_10: basin-scale roamer whose HMM state space exceeds the single-kernel memory budget — dropped best-effort). Full numbers in [`results/summary.csv`](results/summary.csv); honest verdict and limitations in [`nanopubs/drafts/05_outcome.md`](nanopubs/drafts/05_outcome.md).
 
 ## Built from a template
 
