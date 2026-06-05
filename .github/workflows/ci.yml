@@ -31,7 +31,7 @@ jobs:
           # NB: do not write a literal matchable token in this comment — this file
           # is scanned by the very grep below, so it would skip itself.
           placeholder_files=$(grep -rln '{{[A-Z_]\+}}' . --include='*.md' --include='*.yml' --include='*.yaml' --include='*.json' --include='*.cff' --include='*.py' --include='*.toml' 2>/dev/null \
-            | grep -v '/\.claude/' \
+            | grep -v '\.claude/' \
             | while read f; do
                 if grep -oE '\{\{[A-Z_]+\}\}' "$f" | grep -qv '{{ZENODO_DOI}}'; then
                   echo "$f"
