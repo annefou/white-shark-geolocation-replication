@@ -22,13 +22,15 @@ repository-code: "https://github.com/annefou/white-shark-geolocation-replication
 license: MIT
 version: "0.1.0"
 date-released: "2026-06-06"
-# After your first GitHub release the Zenodo integration mints a concept DOI.
-# Replace this once available (run /init-template again or edit by hand):
-doi: "{{ZENODO_DOI}}"
+# Zenodo concept DOI minted by the first GitHub release (v0.1.0, 2026-06-06).
+doi: "10.5281/zenodo.20569075"
 identifiers:
   - type: doi
-    value: "{{ZENODO_DOI}}"
+    value: "10.5281/zenodo.20569075"
     description: "Concept DOI (resolves to the latest version)"
+  - type: doi
+    value: "10.5281/zenodo.20569076"
+    description: "Version DOI for v0.1.0"
 keywords:
   - replication
   - reproducibility
