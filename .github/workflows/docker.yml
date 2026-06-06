@@ -26,8 +26,14 @@ jobs:
           # {{ZENODO_DOI}} is documented to remain unsubstituted until the first
           # GitHub release mints the concept DOI — so don't treat it as a blocker.
           # See docs/fair4rs-checklist.md.
+          # Exclude the whole .claude/ tree: skill/agent docs legitimately contain
+          # double-brace example tokens (e.g. the prior-chain-URI placeholder in the
+          # replication-study skill), which are not uninitialised template fields.
+          # Use '\.claude/' (not '/\.claude/') so it matches under BSD grep too.
+          # NB: do not write a literal matchable token in this comment — this file
+          # is scanned by the very grep below, so it would skip itself.
           placeholder_files=$(grep -rln '{{[A-Z_]\+}}' . --include='*.md' --include='*.yml' --include='*.yaml' --include='*.json' --include='*.cff' --include='*.py' --include='*.toml' 2>/dev/null \
-            | grep -v 'claude/skills/init-template/' \
+            | grep -v '\.claude/' \
             | while read f; do
                 if grep -oE '\{\{[A-Z_]+\}\}' "$f" | grep -qv '{{ZENODO_DOI}}'; then
                   echo "$f"
